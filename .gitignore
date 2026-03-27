@@ -1,0 +1,6 @@
+state/
+web/.shadow-cljs/
+web/node_modules/
+web/package-lock.json
+*.log
+.DS_Store
