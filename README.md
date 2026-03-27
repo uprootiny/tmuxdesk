@@ -94,6 +94,7 @@ All bindings work identically on every node.
 | `Prefix + S` | Create/attach session by name |
 | `Prefix + P` | Preset picker (fzf) |
 | `Prefix + F` | Fleet health dashboard |
+| `Prefix + B` | Fleet broadcast (run command on all nodes) |
 | `Prefix + Tab` | Cycle layout forward |
 | `Prefix + L` | Cycle layout backward |
 | `Prefix + m` | Toggle mouse |
@@ -117,6 +118,36 @@ Session state propagates across the fleet via `mesh-announce.sh`, fired on tmux 
 Each node writes its session list to `state/local.sessions`, then pushes it to every peer as `state/<hostname>.sessions`. The status bar reads all state files to render the fleet-wide `🜂●3 ∴●2 ☰○1` summary.
 
 State is eventually consistent, fire-and-forget, and ephemeral. The `state/` directory is never deployed &mdash; it exists only at runtime.
+
+### Status Bar Rendering
+
+`mesh-status.sh` reads the state files every 5 seconds and renders a compact fleet bar:
+
+```
+🜂●3∴●2☰○1∞✕∇●1
+```
+
+Three tiers of liveness:
+- `●` / `○` &mdash; fresh (<60s), attached / detached
+- `◌` &mdash; stale but recent (60&ndash;120s), last known count shown
+- `✕` &mdash; offline (>120s or missing)
+
+The local node always reads live from `tmux list-sessions`, never from a state file.
+
+### Fleet Broadcast
+
+`Prefix + B` opens an interactive popup that runs a command across all nodes in parallel, displaying per-node results with sigils:
+
+```
+🜂 hyle
+  Linux 5.15.0 ... up 47 days
+∴ hub2
+  Linux 5.15.0 ... up 23 days
+☰ finml
+  Linux 5.15.0 ... up 12 days
+```
+
+Handles timeouts (3s), failures, and works both inside tmux popups and standalone.
 
 ## Deploy
 
@@ -155,15 +186,26 @@ Pre-built window layouts launched via `Prefix + P`:
 | `dev-3pane` | Editor top, two shells bottom |
 | `monitor-4pane` | Quad-split monitoring grid |
 | `pair-2pane` | Side-by-side pairing |
+| `agent-orchestra` | 3-pane AI agent workspace (claude/codex/gemini) &mdash; designed for 🜂 hyle |
+| `gpu-monitor` | GPU + system monitoring grid with nvidia-smi &mdash; designed for ☰ finml |
+| `nix-workshop` | NixOS config/build/store workspace &mdash; designed for ∞ karlsruhe |
 
 ## Fuzzy Jumper
 
-`Prefix + f` opens a full-screen fzf popup that indexes every session and pane across the local tmux server:
+`Prefix + f` opens a full-screen fzf popup that indexes every session and pane &mdash; both local and across the entire fleet:
 
+**Local:**
 - Live preview of pane contents (last 120 lines)
 - Session age, window count, attached state
 - Pane working directory, running command, last output line
 - `Ctrl-R` to refresh without closing
+
+**Cross-fleet:**
+- Reads mesh state files to show remote sessions with host sigils
+- Visual section headers: `── 🜂 hyle ──`, `── ☰ finml ──`, etc.
+- Selecting a remote session opens a new tmux window with `ssh -t <host> 'tmux new -A -s <session>'`
+- Remote preview fetches pane content on-demand (only when focused in fzf)
+- Stale/offline hosts are shown but marked, never cause hangs
 
 ## iTerm Integration
 
@@ -216,16 +258,20 @@ tmuxdesk/
 │   ├── host-karlsruhe.conf
 │   └── host-nabla.conf
 ├── bin/
+│   ├── fleet-broadcast.sh        # Prefix+B fleet-wide command
 │   ├── fleet-health.sh           # Prefix+F dashboard
-│   ├── fuzzy-session-pane.sh     # Prefix+f jumper
+│   ├── fuzzy-session-pane.sh     # Prefix+f jumper (local + cross-fleet)
 │   ├── layout-cycle.sh           # Prefix+Tab/L
 │   ├── mesh-announce.sh          # session state propagation
-│   ├── mesh-status.sh            # fleet status line renderer
+│   ├── mesh-status.sh            # fleet status line renderer (3-tier staleness)
 │   ├── session-ensure.sh         # Prefix+S create-or-attach
 │   └── sigil-status.sh           # sigil rendering helper
 ├── presets/
+│   ├── agent-orchestra.sh        # 🜂 3-pane AI agent workspace
 │   ├── dev-3pane.sh
+│   ├── gpu-monitor.sh            # ☰ GPU + system monitoring
 │   ├── monitor-4pane.sh
+│   ├── nix-workshop.sh           # ∞ NixOS config/build/store
 │   └── pair-2pane.sh
 ├── state/                        # runtime only, never deployed
 │   ├── local.sessions
