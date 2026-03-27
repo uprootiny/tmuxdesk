@@ -27,7 +27,7 @@ deploy_node() {
   fi
 
   # Ensure remote directory structure
-  ssh -o ConnectTimeout=5 -o BatchMode=yes "$alias" \
+  ssh -T -o RemoteCommand=none -o ConnectTimeout=5 -o BatchMode=yes "$alias" \
     'mkdir -p ~/.tmux/tmuxdesk/{bin,conf,presets,state}' || {
     echo "  FAIL: cannot reach ${alias}"
     return 1
@@ -39,20 +39,21 @@ deploy_node() {
     --exclude='state/*' \
     --exclude='.claude/' \
     --exclude='.gitignore' \
+    -e "ssh -o RemoteCommand=none" \
     "${REPO_DIR}/" "${alias}:~/.tmux/tmuxdesk/"
 
   # Write per-host ~/.tmux.conf
-  ssh "$alias" "cat > ~/.tmux.conf" <<EOF
+  ssh -T -o RemoteCommand=none "$alias" "cat > ~/.tmux.conf" <<EOF
 # Managed by tmuxdesk — do not edit directly
 source-file ~/.tmux/tmuxdesk/conf/tmux.base.conf
 source-file ~/.tmux/tmuxdesk/conf/host-${name}.conf
 EOF
 
   # Make scripts executable
-  ssh "$alias" 'chmod +x ~/.tmux/tmuxdesk/bin/*.sh ~/.tmux/tmuxdesk/presets/*.sh 2>/dev/null || true'
+  ssh -T -o RemoteCommand=none "$alias" 'chmod +x ~/.tmux/tmuxdesk/bin/*.sh ~/.tmux/tmuxdesk/presets/*.sh 2>/dev/null || true'
 
   # Reload tmux if running
-  ssh "$alias" 'tmux source-file ~/.tmux.conf 2>/dev/null && echo "  tmux reloaded" || echo "  tmux not running"'
+  ssh -T -o RemoteCommand=none "$alias" 'tmux source-file ~/.tmux.conf 2>/dev/null && echo "  tmux reloaded" || echo "  tmux not running"'
 
   echo "  OK: ${name} deployed"
 }
