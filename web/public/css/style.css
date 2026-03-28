@@ -1,0 +1,673 @@
+/* tmuxdesk codex — alchemical glass aesthetic */
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.6; text-shadow: 0 0 12px var(--sigil-glow); }
+  50% { opacity: 1; text-shadow: 0 0 28px var(--sigil-glow), 0 0 56px rgba(136,136,204,0.15); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+}
+
+@keyframes panel-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes drift-up {
+  0% { transform: translateY(0); opacity: 0; }
+  10% { opacity: 0.06; }
+  90% { opacity: 0.06; }
+  100% { transform: translateY(-100vh); opacity: 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { r: 18; opacity: 0.5; }
+  50% { r: 24; opacity: 0.8; }
+}
+
+:root {
+  --void: #06060c;
+  --deep: #0c0c18;
+  --surface: #111122;
+  --glass: rgba(16, 16, 36, 0.72);
+  --glass-border: rgba(80, 80, 140, 0.18);
+  --glass-glow: rgba(60, 80, 160, 0.06);
+  --text: #c8c8d8;
+  --text-dim: #707088;
+  --text-bright: #e8e8f0;
+  --accent: #5588cc;
+  --accent-warm: #cc8844;
+  --accent-cool: #44aaaa;
+  --accent-green: #44aa88;
+  --sigil: #8888cc;
+  --sigil-glow: rgba(136, 136, 204, 0.3);
+  --link: #7799cc;
+  --serif: 'EB Garamond', 'Georgia', serif;
+  --mono: 'JetBrains Mono', 'Consolas', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  font-size: 18px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--serif);
+  color: var(--text);
+  background: var(--void);
+  min-height: 100vh;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* === Background geometry === */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 800px 600px at 20% 30%, rgba(40, 40, 100, 0.08), transparent),
+    radial-gradient(ellipse 600px 800px at 80% 70%, rgba(60, 30, 80, 0.06), transparent),
+    radial-gradient(ellipse 400px 400px at 50% 50%, rgba(30, 60, 80, 0.04), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#app {
+  position: relative;
+  z-index: 1;
+}
+
+/* === Layout === */
+.codex {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 3rem 2rem 6rem;
+}
+
+/* === Ambient Sigil Rain === */
+.ambient-sigils {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ambient-glyph {
+  position: absolute;
+  top: 100%;
+  font-size: 1.4rem;
+  color: var(--sigil);
+  animation: drift-up 40s linear infinite;
+  user-select: none;
+}
+
+/* === Header / Title === */
+.codex-header {
+  text-align: center;
+  padding: 4rem 0 2rem;
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 2rem;
+}
+
+.codex-title {
+  font-family: var(--serif);
+  font-size: 2.4rem;
+  font-weight: 400;
+  color: var(--text-bright);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.8rem;
+}
+
+.codex-title .sigil {
+  color: var(--sigil);
+  text-shadow: 0 0 20px var(--sigil-glow);
+  animation: breathe 4s ease-in-out infinite;
+}
+
+.codex-subtitle {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.codex-sigil-row {
+  display: flex;
+  justify-content: center;
+  gap: 1.6rem;
+  margin-top: 1.2rem;
+}
+
+.header-fleet-sigil {
+  font-size: 1.2rem;
+  color: var(--sigil);
+  text-shadow: 0 0 8px var(--sigil-glow);
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.header-fleet-sigil:hover {
+  opacity: 1;
+  text-shadow: 0 0 20px var(--sigil-glow);
+}
+
+/* === Fleet Status Bar === */
+.fleet-status-bar {
+  background: rgba(6, 6, 12, 0.7);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  padding: 1rem 1.4rem;
+  margin: 2rem 0;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.status-bar-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+
+.status-bar-sigil {
+  color: var(--accent-cool);
+  margin-right: 0.3em;
+}
+
+.status-bar-nodes {
+  display: flex;
+  justify-content: space-around;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.status-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.6rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.status-node:hover {
+  background: rgba(80, 80, 140, 0.1);
+}
+
+.status-node:hover .status-node-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.status-node-sigil {
+  font-size: 1.6rem;
+  color: var(--sigil);
+  text-shadow: 0 0 12px var(--sigil-glow);
+  transition: all 0.3s ease;
+}
+
+.status-node-sigil.pulse {
+  animation: breathe 2s ease-in-out;
+}
+
+.state-active .status-node-sigil {
+  color: var(--sigil);
+  text-shadow: 0 0 20px var(--sigil-glow), 0 0 40px rgba(136,136,204,0.15);
+}
+
+.state-idle .status-node-sigil {
+  color: rgba(136, 136, 204, 0.5);
+}
+
+.state-quiet .status-node-sigil {
+  color: rgba(136, 136, 204, 0.25);
+}
+
+.status-node-state {
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.state-active .status-node-state { color: var(--accent-green); }
+.state-idle .status-node-state { color: var(--accent-warm); }
+.state-quiet .status-node-state { color: var(--text-dim); }
+
+.status-node-count {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+}
+
+.status-node-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--deep);
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+  padding: 0.5rem 0.7rem;
+  opacity: 0;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.tooltip-name {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-bright);
+  letter-spacing: 0.1em;
+}
+
+.tooltip-load, .tooltip-sessions {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: var(--text-dim);
+}
+
+/* Status bar preview (mini tmux bar) */
+.status-bar-preview {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.8rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+}
+
+.preview-sigil {
+  letter-spacing: 0.05em;
+}
+
+.preview-active {
+  color: var(--accent-green);
+}
+
+/* === Constellation SVG === */
+.constellation {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  margin: 1rem auto;
+  display: block;
+}
+
+.constellation-node {
+  transition: all 0.3s ease;
+}
+
+.constellation-node:hover text:first-of-type {
+  font-size: 22px;
+}
+
+.node-glow-anim {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.sigil-pulse {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+/* === Sigil Navigation === */
+.sigil-nav {
+  display: flex;
+  justify-content: center;
+  gap: 1px;
+  margin: 2.5rem 0;
+  flex-wrap: wrap;
+}
+
+.sigil-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 1.4rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  background: transparent;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.sigil-nav-item:hover {
+  background: var(--glass);
+  border-color: var(--glass-border);
+}
+
+.sigil-nav-item.active {
+  background: var(--glass);
+  border-color: var(--glass-border);
+  box-shadow: 0 0 30px var(--glass-glow);
+}
+
+.sigil-nav-glyph {
+  font-size: 1.8rem;
+  color: var(--sigil);
+  text-shadow: 0 0 12px var(--sigil-glow);
+  margin-bottom: 0.3rem;
+  transition: text-shadow 0.3s ease;
+}
+
+.sigil-nav-item:hover .sigil-nav-glyph,
+.sigil-nav-item.active .sigil-nav-glyph {
+  text-shadow: 0 0 24px var(--sigil-glow), 0 0 48px var(--sigil-glow);
+}
+
+.sigil-nav-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* === Node cards === */
+.node-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin: 1.8rem 0;
+}
+
+.node-card {
+  background: rgba(6, 6, 12, 0.5);
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+  padding: 1.2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.node-card:hover {
+  border-color: var(--sigil);
+  box-shadow: 0 0 20px var(--glass-glow);
+}
+
+.node-card.node-active {
+  border-color: rgba(136, 136, 204, 0.35);
+  box-shadow: 0 0 30px var(--glass-glow);
+}
+
+.node-card .node-sigil {
+  font-size: 2rem;
+  color: var(--sigil);
+  text-shadow: 0 0 16px var(--sigil-glow);
+  margin-bottom: 0.4rem;
+  transition: all 0.3s ease;
+}
+
+.node-card .node-sigil.pulse {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.node-state-dot {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--accent-green);
+  margin-bottom: 0.3rem;
+}
+
+.node-card .node-name {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text);
+  letter-spacing: 0.1em;
+}
+
+.node-card .node-role {
+  font-family: var(--serif);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-top: 0.3rem;
+  font-style: italic;
+}
+
+/* === Essay Panel === */
+.essay-panel {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  padding: 3rem 3.5rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 40px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  animation: panel-in 0.4s ease-out;
+}
+
+.essay-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.essay-sigil {
+  font-size: 2.2rem;
+  color: var(--sigil);
+  text-shadow: 0 0 20px var(--sigil-glow);
+  line-height: 1;
+  animation: breathe 4s ease-in-out infinite;
+}
+
+.essay-title {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.essay-body p {
+  margin-bottom: 1.2rem;
+  color: var(--text);
+}
+
+.essay-body p:last-child {
+  margin-bottom: 0;
+}
+
+.essay-body em {
+  color: var(--text-bright);
+  font-style: italic;
+}
+
+.essay-body strong {
+  color: var(--text-bright);
+  font-weight: 600;
+}
+
+.essay-body ol {
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.essay-body li {
+  margin-bottom: 0.6rem;
+}
+
+/* === Inline sigil links === */
+.sigil-link {
+  color: var(--link);
+  cursor: pointer;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(119, 153, 204, 0.3);
+  transition: all 0.2s ease;
+  padding: 0 0.15em;
+}
+
+.sigil-link:hover {
+  color: var(--text-bright);
+  border-bottom-color: var(--text-bright);
+  text-shadow: 0 0 8px var(--sigil-glow);
+}
+
+/* === Code === */
+code {
+  font-family: var(--mono);
+  font-size: 0.82em;
+  background: rgba(6, 6, 12, 0.5);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  color: var(--accent-cool);
+}
+
+kbd {
+  font-family: var(--mono);
+  font-size: 0.78em;
+  background: rgba(6, 6, 12, 0.6);
+  border: 1px solid var(--glass-border);
+  border-radius: 3px;
+  padding: 0.15em 0.5em;
+  color: var(--accent);
+}
+
+/* === Section dividers === */
+.section-break {
+  text-align: center;
+  padding: 2rem 0;
+  color: var(--sigil);
+  font-size: 1.2rem;
+  letter-spacing: 0.8em;
+  opacity: 0.3;
+  text-shadow: 0 0 12px var(--sigil-glow);
+}
+
+/* === Essay index items === */
+.essay-index-item {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 0.5rem;
+  background: rgba(6, 6, 12, 0.3);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.essay-index-item:hover {
+  background: var(--glass);
+  border-color: var(--glass-border);
+  box-shadow: 0 0 20px var(--glass-glow);
+}
+
+.essay-index-item .idx-sigil {
+  font-size: 1.6rem;
+  color: var(--sigil);
+  text-shadow: 0 0 12px var(--sigil-glow);
+  flex-shrink: 0;
+  width: 2.4rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.essay-index-item:hover .idx-sigil {
+  text-shadow: 0 0 24px var(--sigil-glow), 0 0 40px rgba(136,136,204,0.15);
+}
+
+.essay-index-item .idx-title {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--text-bright);
+}
+
+.essay-index-item .idx-subtitle {
+  font-family: var(--serif);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* === Essay nav row (prev/next) === */
+.essay-nav-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+}
+
+/* === Footer === */
+.codex-footer {
+  text-align: center;
+  padding: 3rem 0 2rem;
+  border-top: 1px solid var(--glass-border);
+  margin-top: 3rem;
+}
+
+.footer-sigil-row {
+  display: flex;
+  justify-content: center;
+  gap: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.footer-glyph {
+  font-size: 1rem;
+  color: var(--sigil);
+  text-shadow: 0 0 8px var(--sigil-glow);
+  opacity: 0.4;
+  transition: all 0.3s ease;
+}
+
+.footer-glyph:hover {
+  opacity: 1;
+  text-shadow: 0 0 20px var(--sigil-glow);
+}
+
+.codex-footer p {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.15em;
+}
+
+/* === Scroll indicator === */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--sigil), var(--accent-cool), var(--accent-warm));
+  z-index: 100;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 8px var(--sigil-glow);
+}
+
+/* === Responsive === */
+@media (max-width: 680px) {
+  html { font-size: 16px; }
+  .codex { padding: 2rem 1rem 4rem; }
+  .essay-panel { padding: 2rem 1.5rem; }
+  .sigil-nav { gap: 0; }
+  .sigil-nav-item { padding: 0.8rem 1rem; }
+  .node-grid { grid-template-columns: repeat(2, 1fr); }
+  .status-bar-nodes { flex-wrap: wrap; }
+  .status-node { padding: 0.4rem 0.6rem; }
+}

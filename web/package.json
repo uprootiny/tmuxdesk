@@ -1,0 +1,17 @@
+{
+  "name": "tmuxdesk-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx shadow-cljs watch app",
+    "build": "npx shadow-cljs release app",
+    "report": "npx shadow-cljs run shadow.cljs.build-report app report.html"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "shadow-cljs": "^2.28.0"
+  }
+}
