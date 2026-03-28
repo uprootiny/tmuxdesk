@@ -2,3 +2,6 @@ state/*
 !state/.gitkeep
 *.log
 .claude/
+web/.shadow-cljs/
+web/node_modules/
+web/public/js/compiled/
