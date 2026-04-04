@@ -11,10 +11,14 @@
 # Local node is always read live from `tmux list-sessions`.
 # Designed to run every 5s in status-interval; must complete < 100ms.
 set -uo pipefail
+# Note: no -e here — this runs in status-interval and must never abort mid-render
 
 TMUXDESK_DIR="${TMUXDESK_DIR:-@tmuxdesk@}"
 FLEET_CONF="${TMUXDESK_DIR}/fleet.conf"
 STATE_DIR="${HOME}/.tmux/tmuxdesk/state"
+
+[[ -f "$FLEET_CONF" ]] || { printf '?'; exit 0; }
+mkdir -p "$STATE_DIR"
 
 # Determine local hostname — prefer tmux variable, fall back to hostname -s
 LOCAL_NAME="$(tmux show -gqv @host_name 2>/dev/null)"
@@ -22,9 +26,12 @@ LOCAL_NAME="$(tmux show -gqv @host_name 2>/dev/null)"
 
 NOW="$(date +%s)"
 
-# Staleness thresholds (seconds)
-STALE_WARN=60    # 60-120s: show ◌ (stale-but-recent)
-STALE_DEAD=120   # >120s: show ✕ (offline)
+# Staleness thresholds (seconds) — balanced against heartbeat interval:
+#   heartbeat pushes every 30s → 1 missed push = 60s (warn)
+#   2 missed pushes = 120s → node is likely down (dead)
+#   see mesh-heartbeat.sh for the full threshold chain
+STALE_WARN=60    # 60-120s: show ◌ (stale-but-recent, 1 missed heartbeat)
+STALE_DEAD=120   # >120s: show ✕ (offline, 2+ missed heartbeats)
 
 output=""
 

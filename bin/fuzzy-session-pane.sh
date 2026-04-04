@@ -234,7 +234,7 @@ case "$kind" in
     # Remote session — open new window with SSH attach
     alias="${target%%:::*}"
     sess="${target#*:::}"
-    tmux new-window -n "r:${sess}" "ssh -t ${alias} 'tmux new-session -A -s ${sess}'"
+    tmux new-window -n "r:${sess}" "ssh -t '${alias}' 'tmux new-session -A -s \"${sess}\"'"
     tmux display-message "fuzzy-jump -> remote ${alias}:${sess}"
     ;;
 
