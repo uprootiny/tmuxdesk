@@ -155,6 +155,40 @@ fn build_status(base_dir: &Path) -> FleetStatus {
     }
 }
 
+fn collect_projects(base_dir: &Path) -> Vec<serde_json::Value> {
+    let state_dir = base_dir.join("state");
+    let mut projects = Vec::new();
+
+    let pattern = state_dir.join("*.projects");
+    let pattern_str = pattern.to_string_lossy();
+
+    // Read all .projects files in state dir
+    if let Ok(entries) = fs::read_dir(&state_dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.extension().and_then(|e| e.to_str()) == Some("projects") {
+                if let Ok(content) = fs::read_to_string(&path) {
+                    for line in content.lines() {
+                        if let Ok(val) = serde_json::from_str::<serde_json::Value>(line) {
+                            projects.push(val);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Sort by last_commit_epoch descending (most recent first)
+    projects.sort_by(|a, b| {
+        let ea = a.get("last_commit_epoch").and_then(|v| v.as_i64()).unwrap_or(0);
+        let eb = b.get("last_commit_epoch").and_then(|v| v.as_i64()).unwrap_or(0);
+        eb.cmp(&ea)
+    });
+
+    let _ = pattern_str; // suppress unused warning
+    projects
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
 
@@ -207,6 +241,14 @@ fn main() {
             "/compact" => {
                 let status = build_status(&base_dir);
                 let resp = Response::from_string(status.compact);
+                let _ = request.respond(resp);
+            }
+            "/projects" => {
+                let projects = collect_projects(&base_dir);
+                let body = serde_json::to_string_pretty(&projects).unwrap_or_default();
+                let resp = Response::from_string(body)
+                    .with_header(json_ct.clone())
+                    .with_header(cors.clone());
                 let _ = request.respond(resp);
             }
             "/health" => {
