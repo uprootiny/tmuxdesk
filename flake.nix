@@ -3,13 +3,53 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
+  outputs = { self, nixpkgs }:
+    let
+      systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
+      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f {
         pkgs = nixpkgs.legacyPackages.${system};
+        inherit system;
+      });
+    in
+    {
+      packages = forAllSystems ({ pkgs, system }: let
+        runtimeDeps = with pkgs; [ bash coreutils findutils gnused gnugrep gawk openssh tmux fzf git hostname ];
+
+        tmuxdesk = pkgs.stdenv.mkDerivation {
+          pname = "tmuxdesk";
+          version = "0.1.0";
+          src = ./.;
+
+          nativeBuildInputs = [ pkgs.makeWrapper ];
+          buildInputs = runtimeDeps;
+
+          installPhase = ''
+            mkdir -p $out/{bin,conf,presets}
+            cp bin/*.sh $out/bin/
+            cp conf/* $out/conf/
+            cp presets/*.sh $out/presets/
+            cp fleet.conf $out/
+
+            # Substitute placeholder paths → Nix store paths
+            for f in $out/bin/*.sh $out/presets/*.sh $out/conf/*; do
+              substituteInPlace "$f" \
+                --replace-quiet '@tmuxdesk@' "$out" \
+                --replace-quiet '#!/usr/bin/env bash' '#!${pkgs.bash}/bin/bash'
+            done
+
+            chmod +x $out/bin/* $out/presets/*
+
+            # Wrap scripts with runtime PATH
+            for f in $out/bin/*.sh; do
+              wrapProgram "$f" --prefix PATH : "${pkgs.lib.makeBinPath runtimeDeps}"
+            done
+            for f in $out/presets/*.sh; do
+              wrapProgram "$f" --prefix PATH : "${pkgs.lib.makeBinPath runtimeDeps}"
+            done
+          '';
+        };
 
         fleet-status-server = pkgs.rustPlatform.buildRustPackage {
           pname = "fleet-status-server";
@@ -17,48 +57,71 @@
           src = ./fleet-status;
           cargoLock.lockFile = ./fleet-status/Cargo.lock;
         };
+      in {
+        default = tmuxdesk;
+        scripts = tmuxdesk;
+        fleet-status = fleet-status-server;
+      });
 
-        tmuxdesk-scripts = pkgs.stdenv.mkDerivation {
-          pname = "tmuxdesk";
-          version = "0.1.0";
-          src = ./.;
-          installPhase = ''
-            mkdir -p $out/{bin,conf,presets}
-            cp bin/*.sh $out/bin/
-            cp conf/* $out/conf/
-            cp presets/*.sh $out/presets/
-            cp fleet.conf $out/
-            chmod +x $out/bin/* $out/presets/*
-
-            # Patch shebangs
-            for f in $out/bin/*.sh $out/presets/*.sh; do
-              substituteInPlace "$f" \
-                --replace-quiet '#!/usr/bin/env bash' '#!${pkgs.bash}/bin/bash'
-            done
-          '';
+      devShells = forAllSystems ({ pkgs, ... }: {
+        default = pkgs.mkShell {
+          packages = with pkgs; [
+            tmux fzf git openssh
+            rustc cargo clippy rustfmt
+          ];
         };
-      in
-      {
-        packages = {
-          default = tmuxdesk-scripts;
-          fleet-status = fleet-status-server;
-          scripts = tmuxdesk-scripts;
-        };
+      });
 
-        apps = {
-          fleet-status = flake-utils.lib.mkApp {
-            drv = fleet-status-server;
+      # NixOS module — fleet-status-server systemd service
+      nixosModules.fleet-status = { config, lib, pkgs, ... }:
+        let
+          cfg = config.services.tmuxdesk-fleet-status;
+          inherit (lib) mkEnableOption mkOption types mkIf;
+        in {
+          options.services.tmuxdesk-fleet-status = {
+            enable = mkEnableOption "tmuxdesk fleet-status HTTP server";
+
+            bind = mkOption {
+              type = types.str;
+              default = "0.0.0.0:7600";
+              description = "Address:port to bind";
+            };
+
+            dataDir = mkOption {
+              type = types.path;
+              default = self.packages.${pkgs.system}.default;
+              description = "Path containing fleet.conf and state/";
+            };
+
+            package = mkOption {
+              type = types.package;
+              default = self.packages.${pkgs.system}.fleet-status;
+            };
+          };
+
+          config = mkIf cfg.enable {
+            systemd.services.fleet-status-server = {
+              description = "tmuxdesk fleet status HTTP server";
+              after = [ "network.target" ];
+              wantedBy = [ "multi-user.target" ];
+              serviceConfig = {
+                ExecStart = "${cfg.package}/bin/fleet-status-server --bind ${cfg.bind} --dir ${cfg.dataDir}";
+                Restart = "on-failure";
+                RestartSec = 5;
+                DynamicUser = true;
+                StateDirectory = "tmuxdesk";
+                ReadOnlyPaths = [ cfg.dataDir ];
+              };
+            };
           };
         };
-      }
-    ) // {
-      # Home-manager module
+
+      # Home-manager module — tmux config + mesh scripts
       homeManagerModules.default = { config, lib, pkgs, ... }:
         let
           cfg = config.programs.tmuxdesk;
           inherit (lib) mkEnableOption mkOption types mkIf;
-        in
-        {
+        in {
           options.programs.tmuxdesk = {
             enable = mkEnableOption "tmuxdesk distributed terminal infrastructure";
 
@@ -68,58 +131,51 @@
               example = "karlsruhe";
             };
 
-            fleetStatusServer = {
-              enable = mkEnableOption "fleet-status HTTP server";
-              bind = mkOption {
-                type = types.str;
-                default = "0.0.0.0:7600";
-                description = "Address to bind the fleet status server";
-              };
-            };
-
             package = mkOption {
               type = types.package;
               default = self.packages.${pkgs.system}.default;
-              description = "The tmuxdesk package to use";
             };
 
-            fleetStatusPackage = mkOption {
-              type = types.package;
-              default = self.packages.${pkgs.system}.fleet-status;
-              description = "The fleet-status-server package to use";
-            };
+            heartbeat.enable = mkEnableOption "mesh heartbeat timer (pushes state every 30s)";
           };
 
           config = mkIf cfg.enable {
-            home.packages = [ cfg.package ]
-              ++ lib.optional cfg.fleetStatusServer.enable cfg.fleetStatusPackage;
+            home.packages = [ cfg.package ];
 
-            # Link tmuxdesk into ~/.tmux/tmuxdesk
-            xdg.configFile."tmux/tmuxdesk".source = cfg.package;
-
-            # Generate ~/.tmux.conf that sources base + host config
+            # Tmux config: source base + host layer from store
             programs.tmux = {
               enable = true;
               extraConfig = ''
-                # tmuxdesk: base + host layer
                 source-file ${cfg.package}/conf/tmux.base.conf
                 source-file ${cfg.package}/conf/host-${cfg.hostName}.conf
               '';
             };
 
-            # Systemd user service for fleet-status-server
-            systemd.user.services = mkIf cfg.fleetStatusServer.enable {
-              fleet-status-server = {
-                Unit = {
-                  Description = "tmuxdesk fleet status HTTP server";
-                  After = [ "network.target" ];
-                };
+            # Ensure mutable state dir exists
+            home.activation.tmuxdeskState = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+              mkdir -p "$HOME/.tmux/tmuxdesk/state"
+            '';
+
+            # Heartbeat timer: push mesh state every 30s
+            systemd.user.services = mkIf cfg.heartbeat.enable {
+              tmuxdesk-heartbeat = {
+                Unit.Description = "tmuxdesk mesh heartbeat";
                 Service = {
-                  ExecStart = "${cfg.fleetStatusPackage}/bin/fleet-status-server --bind ${cfg.fleetStatusServer.bind} --dir ${cfg.package}";
-                  Restart = "on-failure";
-                  RestartSec = 5;
+                  Type = "oneshot";
+                  ExecStart = "${cfg.package}/bin/mesh-heartbeat.sh";
+                  Environment = "TMUXDESK_DIR=${cfg.package}";
                 };
-                Install.WantedBy = [ "default.target" ];
+              };
+            };
+
+            systemd.user.timers = mkIf cfg.heartbeat.enable {
+              tmuxdesk-heartbeat = {
+                Unit.Description = "tmuxdesk mesh heartbeat timer";
+                Timer = {
+                  OnBootSec = "10s";
+                  OnUnitActiveSec = "30s";
+                };
+                Install.WantedBy = [ "timers.target" ];
               };
             };
           };

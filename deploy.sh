@@ -49,6 +49,10 @@ source-file ~/.tmux/tmuxdesk/conf/tmux.base.conf
 source-file ~/.tmux/tmuxdesk/conf/host-${name}.conf
 EOF
 
+  # Substitute @tmuxdesk@ placeholder → ~/.tmux/tmuxdesk for rsync deploys
+  ssh -T -o RemoteCommand=none "$alias" \
+    "find ~/.tmux/tmuxdesk/bin ~/.tmux/tmuxdesk/conf ~/.tmux/tmuxdesk/presets -type f 2>/dev/null | xargs sed -i.bak 's|@tmuxdesk@|~/.tmux/tmuxdesk|g' 2>/dev/null; find ~/.tmux/tmuxdesk -name '*.bak' -delete 2>/dev/null || true"
+
   # Make scripts executable
   ssh -T -o RemoteCommand=none "$alias" 'chmod +x ~/.tmux/tmuxdesk/bin/*.sh ~/.tmux/tmuxdesk/presets/*.sh 2>/dev/null || true'
 

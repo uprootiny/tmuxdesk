@@ -11,8 +11,8 @@
 #                        └ commits in 7d
 set -uo pipefail
 
-TMUXDESK_DIR="${HOME}/.tmux/tmuxdesk"
-STATE_DIR="${TMUXDESK_DIR}/state"
+TMUXDESK_DIR="${TMUXDESK_DIR:-@tmuxdesk@}"
+STATE_DIR="${HOME}/.tmux/tmuxdesk/state"
 FLEET_CONF="${TMUXDESK_DIR}/fleet.conf"
 
 # Determine local host

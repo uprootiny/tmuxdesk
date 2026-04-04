@@ -7,9 +7,9 @@
 #             "commits_7d","files_changed_7d","branch","tmux_session","claude_sessions"}
 set -uo pipefail
 
-TMUXDESK_DIR="${HOME}/.tmux/tmuxdesk"
+TMUXDESK_DIR="${TMUXDESK_DIR:-@tmuxdesk@}"
 FLEET_CONF="${TMUXDESK_DIR}/fleet.conf"
-STATE_DIR="${TMUXDESK_DIR}/state"
+STATE_DIR="${HOME}/.tmux/tmuxdesk/state"
 CLAUDE_DIR="${HOME}/.claude"
 
 mkdir -p "$STATE_DIR"

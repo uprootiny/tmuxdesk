@@ -2,7 +2,8 @@
 # Push local session state to all fleet peers via SSH (fire-and-forget)
 set -uo pipefail
 
-FLEET_CONF="${HOME}/.tmux/tmuxdesk/fleet.conf"
+TMUXDESK_DIR="${TMUXDESK_DIR:-@tmuxdesk@}"
+FLEET_CONF="${TMUXDESK_DIR}/fleet.conf"
 STATE_DIR="${HOME}/.tmux/tmuxdesk/state"
 mkdir -p "$STATE_DIR"
 
@@ -15,7 +16,7 @@ SESSION_DATA="$(tmux list-sessions -F '#{session_name}|#{session_attached}|#{ses
 echo "$SESSION_DATA" > "${STATE_DIR}/local.sessions"
 
 # Refresh project index (background, non-blocking)
-"${HOME}/.tmux/tmuxdesk/bin/project-index.sh" 2>/dev/null &
+"${TMUXDESK_DIR}/bin/project-index.sh" 2>/dev/null &
 
 PROJECT_DATA=""
 [[ -f "${STATE_DIR}/local.projects" ]] && PROJECT_DATA="$(cat "${STATE_DIR}/local.projects")"

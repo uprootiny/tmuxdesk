@@ -4,9 +4,9 @@
 # Requires: tmux, fzf (falls back to choose-tree without fzf)
 set -euo pipefail
 
-TMUXDESK="${HOME}/.tmux/tmuxdesk"
-FLEET_CONF="${TMUXDESK}/fleet.conf"
-STATE_DIR="${TMUXDESK}/state"
+TMUXDESK_DIR="${TMUXDESK_DIR:-@tmuxdesk@}"
+FLEET_CONF="${TMUXDESK_DIR}/fleet.conf"
+STATE_DIR="${HOME}/.tmux/tmuxdesk/state"
 STALE_THRESHOLD=300  # 5 minutes in seconds
 
 # ---------------------------------------------------------------------------

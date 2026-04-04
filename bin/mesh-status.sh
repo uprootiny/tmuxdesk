@@ -12,7 +12,8 @@
 # Designed to run every 5s in status-interval; must complete < 100ms.
 set -uo pipefail
 
-FLEET_CONF="${HOME}/.tmux/tmuxdesk/fleet.conf"
+TMUXDESK_DIR="${TMUXDESK_DIR:-@tmuxdesk@}"
+FLEET_CONF="${TMUXDESK_DIR}/fleet.conf"
 STATE_DIR="${HOME}/.tmux/tmuxdesk/state"
 
 # Determine local hostname — prefer tmux variable, fall back to hostname -s

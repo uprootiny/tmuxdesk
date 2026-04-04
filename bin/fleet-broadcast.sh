@@ -12,7 +12,8 @@
 # If running outside tmux, results go to stdout.
 set -euo pipefail
 
-FLEET_CONF="${HOME}/.tmux/tmuxdesk/fleet.conf"
+TMUXDESK_DIR="${TMUXDESK_DIR:-@tmuxdesk@}"
+FLEET_CONF="${TMUXDESK_DIR}/fleet.conf"
 SSH_TIMEOUT=3  # seconds per node
 
 # ---------------------------------------------------------------------------

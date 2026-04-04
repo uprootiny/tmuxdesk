@@ -3,7 +3,8 @@
 # Used standalone or inside tmux popup (Prefix+F)
 set -uo pipefail
 
-FLEET_CONF="${HOME}/.tmux/tmuxdesk/fleet.conf"
+TMUXDESK_DIR="${TMUXDESK_DIR:-@tmuxdesk@}"
+FLEET_CONF="${TMUXDESK_DIR}/fleet.conf"
 LOCAL_NAME="$(tmux show -gqv @host_name 2>/dev/null || hostname -s)"
 TIMEOUT=3
 
