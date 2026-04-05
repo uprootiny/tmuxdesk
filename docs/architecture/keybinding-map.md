@@ -57,6 +57,8 @@ All bindings use the tmux prefix (default `Ctrl+b`).
 | Binding | Action | Script |
 |---------|--------|--------|
 | `F` | Fleet health popup | `bin/fleet-health.sh` |
+| `B` | Broadcast command to all nodes | `bin/fleet-broadcast.sh` |
+| `G` | Project search across fleet | `bin/fleet-search.sh` |
 | `r` | Reload config | sources `~/.tmux.conf` |
 | `m` | Toggle mouse | displays on/off |
 
@@ -68,7 +70,7 @@ Sessions:    s S             (small=tree, big=on-demand)
 Find:        f               (fuzzy)
 Presets:     P               (picker)
 Layout:      Tab L           (tab=forward, shift=back)
-Fleet:       F               (health)
+Fleet:       F B G           (health, broadcast, grep-projects)
 Splits:      | -             (visual: vertical, horizontal)
 Window:      c               (create)
 Resize:      H J K           (shift+direction = resize)
