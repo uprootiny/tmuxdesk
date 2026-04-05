@@ -39,6 +39,11 @@ deploy_node() {
     --exclude='state/*' \
     --exclude='.claude/' \
     --exclude='.gitignore' \
+    --exclude='fleet-status/target/' \
+    --exclude='web/node_modules/' \
+    --exclude='web/.shadow-cljs/' \
+    --exclude='flake.lock' \
+    --exclude='*.log' \
     -e "ssh -o RemoteCommand=none" \
     "${REPO_DIR}/" "${alias}:~/.tmux/tmuxdesk/"
 

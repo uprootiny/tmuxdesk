@@ -186,7 +186,7 @@ fi
 # ---------------------------------------------------------------------------
 # Main: build row list, launch fzf, act on selection
 # ---------------------------------------------------------------------------
-SELF_PATH="${TMUXDESK}/bin/fuzzy-session-pane.sh"
+SELF_PATH="${TMUXDESK_DIR}/bin/fuzzy-session-pane.sh"
 
 tmp_file="$(mktemp -t tmux-fuzzy-panes.XXXXXX)"
 cleanup() { rm -f "$tmp_file"; }

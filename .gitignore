@@ -2,5 +2,8 @@ state/
 web/.shadow-cljs/
 web/node_modules/
 web/package-lock.json
+fleet-status/target/
+flake.lock
+result
 *.log
 .DS_Store

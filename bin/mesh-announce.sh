@@ -18,8 +18,8 @@ _tmp="${STATE_DIR}/local.sessions.$$"
 printf '%s\n' "$SESSION_DATA" > "$_tmp"
 mv "$_tmp" "${STATE_DIR}/local.sessions"
 
-# Refresh project index (background, non-blocking)
-"${TMUXDESK_DIR}/bin/project-index.sh" 2>/dev/null &
+# Refresh project index — must complete before we read the output
+"${TMUXDESK_DIR}/bin/project-index.sh" 2>/dev/null || true
 
 PROJECT_DATA=""
 [[ -f "${STATE_DIR}/local.projects" ]] && PROJECT_DATA="$(cat "${STATE_DIR}/local.projects")"
