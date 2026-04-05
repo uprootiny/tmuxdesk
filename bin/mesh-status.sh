@@ -13,7 +13,7 @@
 set -uo pipefail
 # Note: no -e here — this runs in status-interval and must never abort mid-render
 
-TMUXDESK_DIR="${TMUXDESK_DIR:-@tmuxdesk@}"
+TMUXDESK_DIR="${TMUXDESK_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 FLEET_CONF="${TMUXDESK_DIR}/fleet.conf"
 STATE_DIR="${HOME}/.tmux/tmuxdesk/state"
 

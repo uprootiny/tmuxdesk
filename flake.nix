@@ -32,21 +32,23 @@
             cp presets/*.sh $out/presets/
             cp fleet.conf $out/
 
-            # Substitute placeholder paths → Nix store paths
-            for f in $out/bin/*.sh $out/presets/*.sh $out/conf/*; do
+            # Fix shebangs for Nix
+            for f in $out/bin/*.sh $out/presets/*.sh; do
               substituteInPlace "$f" \
-                --replace-quiet '@tmuxdesk@' "$out" \
                 --replace-quiet '#!/usr/bin/env bash' '#!${pkgs.bash}/bin/bash'
             done
 
             chmod +x $out/bin/* $out/presets/*
 
-            # Wrap scripts with runtime PATH
+            # Wrap scripts: set TMUXDESK_DIR and prepend runtime PATH
             for f in $out/bin/*.sh; do
-              wrapProgram "$f" --prefix PATH : "${pkgs.lib.makeBinPath runtimeDeps}"
+              wrapProgram "$f" \
+                --set TMUXDESK_DIR "$out" \
+                --prefix PATH : "${pkgs.lib.makeBinPath runtimeDeps}"
             done
             for f in $out/presets/*.sh; do
-              wrapProgram "$f" --prefix PATH : "${pkgs.lib.makeBinPath runtimeDeps}"
+              wrapProgram "$f" \
+                --prefix PATH : "${pkgs.lib.makeBinPath runtimeDeps}"
             done
           '';
         };
@@ -142,10 +144,11 @@
           config = mkIf cfg.enable {
             home.packages = [ cfg.package ];
 
-            # Tmux config: source base + host layer from store
+            # Tmux config: set install dir, then source base + host layer
             programs.tmux = {
               enable = true;
               extraConfig = ''
+                set -g @tmuxdesk_dir "${cfg.package}"
                 source-file ${cfg.package}/conf/tmux.base.conf
                 source-file ${cfg.package}/conf/host-${cfg.hostName}.conf
               '';

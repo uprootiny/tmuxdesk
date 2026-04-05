@@ -12,7 +12,7 @@
 # If running outside tmux, results go to stdout.
 set -euo pipefail
 
-TMUXDESK_DIR="${TMUXDESK_DIR:-@tmuxdesk@}"
+TMUXDESK_DIR="${TMUXDESK_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 FLEET_CONF="${TMUXDESK_DIR}/fleet.conf"
 SSH_TIMEOUT=3  # seconds per node
 

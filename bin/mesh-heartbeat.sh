@@ -13,7 +13,7 @@ set -uo pipefail
 # Invariant: push_interval < fresh < stale < prune
 #            30s          < 60s   < 120s  < 300s
 
-TMUXDESK_DIR="${TMUXDESK_DIR:-@tmuxdesk@}"
+TMUXDESK_DIR="${TMUXDESK_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
 # Only run if tmux is active
 tmux list-sessions &>/dev/null || exit 0

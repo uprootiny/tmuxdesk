@@ -4,7 +4,7 @@
 # (single cat > file over SSH completes or fails).
 set -uo pipefail
 
-TMUXDESK_DIR="${TMUXDESK_DIR:-@tmuxdesk@}"
+TMUXDESK_DIR="${TMUXDESK_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 FLEET_CONF="${TMUXDESK_DIR}/fleet.conf"
 STATE_DIR="${HOME}/.tmux/tmuxdesk/state"
 mkdir -p "$STATE_DIR"

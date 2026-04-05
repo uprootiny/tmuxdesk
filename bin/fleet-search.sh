@@ -7,7 +7,7 @@
 #   sigil name [branch] 3c/7d 12f host:/path ●session cc:2
 set -euo pipefail
 
-TMUXDESK_DIR="${TMUXDESK_DIR:-@tmuxdesk@}"
+TMUXDESK_DIR="${TMUXDESK_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 STATE_DIR="${HOME}/.tmux/tmuxdesk/state"
 FLEET_CONF="${TMUXDESK_DIR}/fleet.conf"
 

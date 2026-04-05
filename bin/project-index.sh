@@ -9,7 +9,7 @@
 # Portable: bash 3+, no associative arrays, no GNU-only tools.
 set -euo pipefail
 
-TMUXDESK_DIR="${TMUXDESK_DIR:-@tmuxdesk@}"
+TMUXDESK_DIR="${TMUXDESK_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 FLEET_CONF="${TMUXDESK_DIR}/fleet.conf"
 STATE_DIR="${HOME}/.tmux/tmuxdesk/state"
 CLAUDE_DIR="${HOME}/.claude"
