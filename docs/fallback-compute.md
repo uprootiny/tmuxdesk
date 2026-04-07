@@ -30,10 +30,8 @@ Free-tier compute that can serve as backup or overflow nodes for the fleet. Crit
 
 ## Persistent process hosting (non-VM)
 
-### Fly.io
-- 3 shared-cpu-1x VMs, 256 MB each (always free)
-- Persistent volumes, WireGuard-based private networking
-- Can run fleet-status-server or heartbeat relays
+### Fly.io — free tier discontinued
+- Was 3 shared-cpu-1x VMs. Ended October 2024.
 - https://fly.io/docs/about/pricing/
 
 ### Railway
@@ -43,6 +41,11 @@ Free-tier compute that can serve as backup or overflow nodes for the fleet. Crit
 ### Render
 - Static sites and web services (free tier sleeps after 15 min)
 - Not suitable for persistent fleet nodes
+
+### Hetzner (not free, but cheapest)
+- CX22: 2 vCPU, 4 GB, 40 GB — ~€3.29/month
+- Already powers most of the current fleet
+- Mention for context: cheaper than any "free" tier that requires engineering around limits
 
 ## Tunneling / mesh fallbacks
 
