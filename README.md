@@ -34,10 +34,11 @@ Each node needs a `conf/host-<name>.conf` file. Copy an existing one as a templa
 ```bash
 ./deploy.sh              # all nodes
 ./deploy.sh hyle nabla   # specific nodes
-./deploy.sh --dry-run    # preview
+./deploy.sh --dry-run    # preview what would happen
+./deploy.sh --verify     # check fleet health without deploying
 ```
 
-This rsyncs the config to each node, writes `~/.tmux.conf`, and hot-reloads tmux.
+This validates configs, rsyncs to each node, writes `~/.tmux.conf`, and hot-reloads tmux. The `--verify` flag checks reachability, config presence, and sigil correctness across the fleet.
 
 ### 3. Start the heartbeat
 
@@ -79,7 +80,8 @@ Your status line shows every node in the fleet:
 | `Prefix + B` | Broadcast a command to all nodes |
 | `Prefix + P` | Pick a preset layout |
 | `Prefix + S` | Create or switch to a named session |
-| `Prefix + Tab` | Cycle window layout |
+| `Prefix + Tab` | Cycle layout forward |
+| `Prefix + M-l` | Cycle layout backward |
 | `Prefix + h/j/k/l` | Navigate panes (vi-style) |
 | `Prefix + \|` | Split horizontal |
 | `Prefix + -` | Split vertical |

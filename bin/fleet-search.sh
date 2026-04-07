@@ -27,8 +27,8 @@ json_num() { printf '%s' "$1" | sed -n "s/.*\"$2\":\([0-9]*\).*/\1/p"; }
 LOCAL_NAME="$(tmux show -gqv @host_name 2>/dev/null || true)"
 [[ -z "$LOCAL_NAME" ]] && LOCAL_NAME="$(hostname -s)"
 
-# Refresh local index (fast, <1s, background)
-"${TMUXDESK_DIR}/bin/project-index.sh" 2>/dev/null &
+# Refresh local index (usually <2s, runs before we read state files)
+"${TMUXDESK_DIR}/bin/project-index.sh" 2>/dev/null || true
 
 # ---------------------------------------------------------------------------
 # Collect all project lines from state files
@@ -42,8 +42,6 @@ for f in "${STATE_DIR}"/*.projects; do
     ALL_LINES+="${line}"$'\n'
   done < "$f"
 done
-
-wait 2>/dev/null || true
 
 if [[ -f "${STATE_DIR}/local.projects" ]]; then
   while IFS= read -r line; do

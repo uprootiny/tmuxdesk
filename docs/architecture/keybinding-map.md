@@ -25,7 +25,7 @@ All bindings use the tmux prefix (default `Ctrl+b`).
 | Binding | Action | Script |
 |---------|--------|--------|
 | `Tab` | Cycle layout forward | `bin/layout-cycle.sh next` |
-| `L` | Cycle layout backward | `bin/layout-cycle.sh prev` |
+| `M-l` | Cycle layout backward | `bin/layout-cycle.sh prev` |
 
 ## Splits & Windows
 
@@ -69,7 +69,7 @@ Navigation:  h j k l        (vi directions)
 Sessions:    s S             (small=tree, big=on-demand)
 Find:        f               (fuzzy)
 Presets:     P               (picker)
-Layout:      Tab L           (tab=forward, shift=back)
+Layout:      Tab M-l         (tab=forward, alt-l=back)
 Fleet:       F B G           (health, broadcast, grep-projects)
 Splits:      | -             (visual: vertical, horizontal)
 Window:      c               (create)
