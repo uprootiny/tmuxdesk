@@ -113,6 +113,17 @@ Pre-built window layouts:
 | `gpu-monitor` | nvidia-smi + htop + disk |
 | `nix-workshop` | NixOS config + build + store |
 
+## Core vs extensions
+
+The base config (`tmux.base.conf`) is self-contained: terminal settings, vi navigation, splits, status bar with fleet mesh, session logging, layout cycling. No external tools required beyond tmux and bash.
+
+Extensions live in `conf/ext.conf` and are loaded automatically if the file exists. They add:
+- **Fuzzy features** (`f`, `G`, `P`) — require fzf
+- **Fleet ops** (`F`, `B`) — SSH to all peers
+- **TPM** — session persistence via resurrect + continuum
+
+To run core-only: rename or delete `conf/ext.conf`. Everything else keeps working.
+
 ## How it works
 
 ### Three layers
