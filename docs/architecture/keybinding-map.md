@@ -43,14 +43,14 @@ All bindings use the tmux prefix (default `Ctrl+b`).
 | `J` | Resize pane down 5 |
 | `K` | Resize pane up 5 |
 
-## Copy Mode (vi)
+## Copy Mode (emacs)
 
 | Binding | Action |
 |---------|--------|
-| `v` | Begin selection |
-| `C-v` | Toggle rectangle selection |
-| `y` | Yank (copy + exit) |
-| `Escape` | Cancel copy mode |
+| `C-Space` | Begin selection |
+| `M-w` | Copy selection |
+| `C-w` | Cut selection |
+| `q` | Cancel copy mode |
 
 ## Fleet & System
 
@@ -75,5 +75,5 @@ Splits:      | -             (visual: vertical, horizontal)
 Window:      c               (create)
 Resize:      H J K           (shift+direction = resize)
 System:      r m             (reload, mouse)
-Copy:        v y C-v Esc     (vi: visual, yank, block, cancel)
+Copy:        C-Space M-w q   (emacs: mark, copy, quit)
 ```

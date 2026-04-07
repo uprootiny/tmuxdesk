@@ -82,7 +82,7 @@ Your status line shows every node in the fleet:
 | `Prefix + S` | Create or switch to a named session |
 | `Prefix + Tab` | Cycle layout forward |
 | `Prefix + M-l` | Cycle layout backward |
-| `Prefix + h/j/k/l` | Navigate panes (vi-style) |
+| `Prefix + h/j/k/l` | Navigate panes |
 | `Prefix + \|` | Split horizontal |
 | `Prefix + -` | Split vertical |
 | `Prefix + r` | Reload config |
