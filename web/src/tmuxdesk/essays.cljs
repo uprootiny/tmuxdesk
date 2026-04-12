@@ -13,7 +13,65 @@
     :desc "Cloud gradient. The del operator — differentiation, descent toward optimal."}])
 
 (def essays
-  [{:id :fleet
+  [{:id :orchestratione
+    :sigil "❦"
+    :title "De Orchestratione"
+    :subtitle "How the Manuscript Regardeth Its Own Making"
+    :body
+    [[:p "Audi, lector. This page, which thou readest as though it were a single "
+      "voice, is in sooth a parliament. Many hands, many little monks — "
+      [:em "monaculi, homunculi scribentes"] " — were sent forth into the "
+      "scriptorium of the world, each with his errand, each with his slice of "
+      "quire. One was dispatched to the herbal, one to the bestiary, one to the "
+      "chronicle of kings, one to the margins where the drolleries live. Each "
+      "returned bearing his findings as a pilgrim bringeth relics: wrapped, "
+      "labelled, and of uncertain provenance."]
+     [:p [:em "Nota bene:"] " the seam thou seekest is not hidden. It is here, "
+      "and here, and here."]
+     [:p "The illusion of the single illuminated page is the orchestrator's art. "
+      [:em "Ecce theatrum:"] " the seam is concealed, the hand feigned continuous, "
+      "the voice feigned whole. Yet the seam is there — " [:em "sutura invisibilis "
+      "sed vera"] " — and an honest manuscript acknowledgeth its stitches. Better "
+      "a visible thread than a lie of wholeness."]
+     [:p "Reader, thou holdest in thy hands not a work but the residue of a "
+      "procession. Forget not the procession when thou admirest the residue."]
+     [:p [:strong "❦ Quattuor Instrumenta Concordiae ❦"]]
+     [:p [:strong "I · Scaffoldum Prius"] " — The skeleton laid down before the "
+      "scattering. A quire with slots already ruled, already titled. The monks "
+      "fill the slots; they do not invent the page. " [:em "Forma praecedit materiam."]]
+     [:p [:strong "II · Relatio Structurata"] " — Each monk reporteth in the same "
+      "shape: what he was sent for, what he found, what he could not find, and how "
+      "sure he is. A free-form report is a brawl waiting to happen. "
+      [:em "Forma reditus disciplina est."]]
+     [:p [:strong "III · Iudicium Ponderis"] " — Not every relic is the True Cross. "
+      "The orchestrator weigheth each finding — its provenance, its corroboration, "
+      "its plausibility — before granting it space upon the page. "
+      [:em "Pondera, ne credas."]]
+     [:p [:strong "IV · Sutura Honesta"] " — When the pieces are joined, the seam "
+      "is not hidden but blessed. Mark where the dialect changeth; mark where one "
+      "monk endeth and another beginneth. " [:em "Sutura visibilis, fides integra."]]
+     [:p "Three perils attend the orchestrator. The first is "
+      [:em "superabundantia monaculorum:"] " too many little monks, the orchestrator "
+      "buried beneath findings he cannot weigh in his lifetime. The second is "
+      [:em "consensus falsus:"] " agreement not because truth was found but because "
+      "each monk read the others' returns over their shoulders."]
+     [:p "The third peril, gravest of all, is " [:em "vox feigned"] " — the "
+      "orchestrator stitching so smoothly that the reader forgetteth the parliament "
+      "altogether and beginneth to believe a single oracle hath spoken. The page "
+      "becometh idol; the monks become invisible; the seam, lost."]
+     [:p "Where, in this parliament, is the author? The answer: the author is the "
+      "one who chose the question, who set the scaffolding, who weighed the returns, "
+      "and who blessed the seams. " [:em "Auctor est qui eligit."] " Look for the "
+      "rhythm of choice, the recurrence of obsessions, the shape of the questions "
+      "asked. There the author dwelleth, even when no sentence is hers."]
+     [:p "Reader, when next thou holdest a page that speaketh with a single voice, "
+      "ask: " [:strong "Quis misit?"] " — who dispatched the monks? "
+      [:strong "Quis pondera tenuit?"] " — who held the scales? "
+      [:strong "Ubi sunt suturae?"] " — where are the seams? Hold these three "
+      "questions as the pilgrim holdeth her staff, and no manuscript shall pass "
+      "thee unexamined."]]}
+
+   {:id :fleet
     :sigil "∴"
     :title "The Fleet"
     :subtitle "On distributed identity and the naming of machines"
